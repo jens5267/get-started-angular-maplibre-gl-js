@@ -5,10 +5,11 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
 import { MapsModule } from './modules/maps/maps.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, NgbModule, NgxMapLibreGLModule, MapsModule],
+  imports: [BrowserModule, NgbModule, NgxMapLibreGLModule, MapsModule, BrowserAnimationsModule],
   providers: [],
   bootstrap: [AppComponent],
 })
