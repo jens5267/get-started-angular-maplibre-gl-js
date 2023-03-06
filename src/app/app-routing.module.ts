@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { MapsComponent } from './modules/maps/maps/maps.component';
+import { MapsModule } from './modules/maps/maps.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 const routes: Routes = [
   { path: '', redirectTo: 'task', pathMatch: 'full' },
-  { path: 'map/', component: MapsComponent },
+  { path: 'map/', component: MapsModule },
+  { path: 'tasks/', component: TasksModule },
   // { path: '**', redirectTo: 'task' },
 ];
 
