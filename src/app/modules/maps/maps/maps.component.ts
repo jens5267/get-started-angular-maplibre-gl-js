@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-maps',
@@ -6,6 +7,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./maps.component.css'],
 })
 export class MapsComponent {
-  apiKey: string = '8visfHeaExv87l7IYbF2';
-  style: string = `https://api.maptiler.com/maps/streets/style.json?key=${this.apiKey}`;
+  style: string = `https://api.maptiler.com/maps/streets/style.json?key=${environment.MAP_TILER_API_KEY}`;
 }
