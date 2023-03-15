@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   MAP_TILER_API_KEY: '8visfHeaExv87l7IYbF2',
+  MAP_TILER_URL: 'https://api.maptiler.com',
 };
 
 /*
