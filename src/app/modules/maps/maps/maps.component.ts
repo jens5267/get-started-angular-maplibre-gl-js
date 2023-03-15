@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { environment } from 'src/environments/environment';
 import { Map, Marker, Popup } from 'maplibre-gl';
-import { MatDialog } from '@angular/material/dialog';
-import { MarkerInfoComponent } from '../marker-info/marker-info.component';
-import { PolygonInstance } from 'src/app/interfaces';
+import { PolygonService } from 'src/app/services/polygon/polygon.service';
+import { environment } from 'src/environments/environment';
+import { PolygonInstance, MarkerInstance } from 'src/app/interfaces';
+import { MarkerService } from 'src/app/services/marker/marker.service';
 
 @Component({
   selector: 'app-maps',
@@ -11,42 +11,53 @@ import { PolygonInstance } from 'src/app/interfaces';
   styleUrls: ['./maps.component.scss'],
 })
 export class MapsComponent implements OnInit {
-  constructor(private matDialog: MatDialog) {}
-  map!: Map;
   lngLat: [number, number] = [4.89707, 52.377956];
-  lngLat2: [number, number] = [4.89758, 52.377912];
   zoom: number = 14;
-  poly1: PolygonInstance = {
-    id: 1,
-    name: 'Amsterdam',
-    source: '2430cba4-dfeb-4422-90e3-add6fff66aeb',
-    color: 'blue',
-  };
-  style: string = `https://api.maptiler.com/maps/basic/style.json?key=${environment.MAP_TILER_API_KEY}`;
-  ngOnInit() {
-    const map = this.createMap();
-    this.createMarker(this.lngLat);
-    this.createMarker(this.lngLat2);
+  map!: Map;
+  polygons: PolygonInstance[] = [];
+  style: string = `${environment.MAP_TILER_URL}/maps/basic/style.json?key=${environment.MAP_TILER_API_KEY}`;
 
-    this.createPolygon(this.map, this.poly1);
+  constructor(
+    private polygonsService: PolygonService,
+    private markersService: MarkerService
+  ) {}
+
+  ngOnInit() {
+    this.createMap();
+    this.getPolygons();
+    this.getMarkers();
   }
 
-  // getPolygons() {
-  //   this.polygonService.getPolygons().subscribe((polygons: any) => {
-  //     polygons.forEach((polygon: PolygonInstance) => {
-  //       console.log('POLYGON');
-  //       // this.createPolygon(this.map, polygon);
-  //     });
-  //   });
-  // }
+  getPolygons() {
+    this.polygonsService.getPolygons().subscribe((polygons: any) => {
+      polygons.forEach((polygon: PolygonInstance) => {
+        this.createPolygon(this.map, polygon);
+      });
+    });
+  }
+
+  getMarkers() {
+    this.markersService.getMarkers().subscribe((markers: any) => {
+      markers.forEach((marker: MarkerInstance) => {
+        this.createMarker(marker);
+      });
+    });
+  }
 
   createMap() {
     this.map = new Map({
       container: 'map',
       style: this.style,
       center: this.lngLat,
-      zoom: this.zoom,
+      zoom: 14.0,
     });
+  }
+
+  createMarker(marker: MarkerInstance) {
+    new Marker()
+      .setLngLat([marker.longitude, marker.latitude])
+      .setPopup(new Popup().setHTML(marker.description))
+      .addTo(this.map);
   }
 
   addSource(map: Map, polygon: PolygonInstance): void {
@@ -80,13 +91,6 @@ export class MapsComponent implements OnInit {
     });
   }
 
-  createMarker(coordinates: [number, number]) {
-    const marker = new Marker()
-      .setLngLat(coordinates)
-      .setPopup(new Popup().setHTML('<h1>Hello world</h1>'))
-      .addTo(this.map);
-  }
-
   createPolygon(map: Map, polygon: PolygonInstance): void {
     map.on('load', () => {
       this.addSource(map, polygon);
@@ -94,24 +98,4 @@ export class MapsComponent implements OnInit {
       this.addBoundary(map, polygon);
     });
   }
-
-  // createPolygon(map: Map, source: string, source_name: string) {
-  //   map.on('load', function () {
-  //     map.addSource(`${source_name}`, {
-  //       type: 'geojson',
-  //       data: `https://api.maptiler.com/data/${source}/features.json?key=${environment.MAP_TILER_API_KEY}`,
-  //     });
-
-  //     map.addLayer({
-  //       id: `${source_name}`,
-  //       type: 'fill',
-  //       source: `${source_name}`, // reference the data source
-  //       layout: {},
-  //       paint: {
-  //         'fill-color': '#FFAA01', // orange color fill
-  //         'fill-opacity': 0.5,
-  //       },
-  //     });
-  //   });
-  // }
 }
